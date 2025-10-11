@@ -18,8 +18,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core"))
-        }
-        nativeMain.dependencies {
+            implementation(libs.kotlin.logging)
             implementation(libs.vulkan.kotlin)
         }
     }

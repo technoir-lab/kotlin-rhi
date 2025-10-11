@@ -21,6 +21,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core"))
+            implementation(libs.kotlinx.io.core)
         }
         webMain.dependencies {
             implementation(libs.kotlinx.browser)

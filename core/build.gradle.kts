@@ -26,6 +26,10 @@ kotlin {
     }
 
     sourceSets {
+        commonMain.dependencies {
+            api(libs.kotlin.math)
+            api(libs.kotlinx.io.core)
+        }
         webMain.dependencies {
             implementation(libs.kotlinx.browser)
         }

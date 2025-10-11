@@ -1,3 +1,5 @@
 package io.technoirlab.rhi.core
 
-expect class WindowHandle
+expect class WindowHandle {
+    val extent: Extent2D
+}
