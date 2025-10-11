@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.mock
 
+import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
@@ -49,6 +50,7 @@ class MockDevice : Device {
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState,
+        depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
     ): RenderState {
         TODO("Not yet implemented")

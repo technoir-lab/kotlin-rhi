@@ -2,12 +2,22 @@
 
 package io.technoirlab.rhi.vulkan
 
+import io.technoirlab.rhi.core.ComparisonFunc
 import io.technoirlab.rhi.core.CullMode
 import io.technoirlab.rhi.core.FillMode
 import io.technoirlab.rhi.core.FrontFace
+import io.technoirlab.rhi.core.StencilOp
 import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexAttribute
+import io.technoirlab.volk.VK_COMPARE_OP_ALWAYS
+import io.technoirlab.volk.VK_COMPARE_OP_EQUAL
+import io.technoirlab.volk.VK_COMPARE_OP_GREATER
+import io.technoirlab.volk.VK_COMPARE_OP_GREATER_OR_EQUAL
+import io.technoirlab.volk.VK_COMPARE_OP_LESS
+import io.technoirlab.volk.VK_COMPARE_OP_LESS_OR_EQUAL
+import io.technoirlab.volk.VK_COMPARE_OP_NEVER
+import io.technoirlab.volk.VK_COMPARE_OP_NOT_EQUAL
 import io.technoirlab.volk.VK_CULL_MODE_BACK_BIT
 import io.technoirlab.volk.VK_CULL_MODE_FRONT_BIT
 import io.technoirlab.volk.VK_CULL_MODE_NONE
@@ -27,10 +37,19 @@ import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_LINE_STRIP
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_POINT_LIST
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+import io.technoirlab.volk.VK_STENCIL_OP_DECREMENT_AND_CLAMP
+import io.technoirlab.volk.VK_STENCIL_OP_DECREMENT_AND_WRAP
+import io.technoirlab.volk.VK_STENCIL_OP_INCREMENT_AND_CLAMP
+import io.technoirlab.volk.VK_STENCIL_OP_INCREMENT_AND_WRAP
+import io.technoirlab.volk.VK_STENCIL_OP_INVERT
+import io.technoirlab.volk.VK_STENCIL_OP_KEEP
+import io.technoirlab.volk.VK_STENCIL_OP_REPLACE
+import io.technoirlab.volk.VK_STENCIL_OP_ZERO
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
 import io.technoirlab.volk.VK_VERSION_PATCH
 import io.technoirlab.volk.VkColorSpaceKHR
+import io.technoirlab.volk.VkCompareOp
 import io.technoirlab.volk.VkCullModeFlags
 import io.technoirlab.volk.VkExtent2D
 import io.technoirlab.volk.VkFormat
@@ -39,6 +58,7 @@ import io.technoirlab.volk.VkIndexType
 import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPresentModeKHR
 import io.technoirlab.volk.VkPrimitiveTopology
+import io.technoirlab.volk.VkStencilOp
 import io.technoirlab.volk.VkSurfaceTransformFlagBitsKHR
 import io.technoirlab.volk.string_VkColorSpaceKHR
 import io.technoirlab.volk.string_VkPresentModeKHR
@@ -58,6 +78,17 @@ internal inline fun VkExtent2D.asString(): String = "${width}x$height"
 
 internal inline fun versionToString(version: UInt): String =
     "${VK_VERSION_MAJOR(version)}.${VK_VERSION_MINOR(version)}.${VK_VERSION_PATCH(version)}"
+
+internal fun ComparisonFunc.toVkCompareOp(): VkCompareOp = when (this) {
+    ComparisonFunc.Never -> VK_COMPARE_OP_NEVER
+    ComparisonFunc.Less -> VK_COMPARE_OP_LESS
+    ComparisonFunc.Equal -> VK_COMPARE_OP_EQUAL
+    ComparisonFunc.LessOrEqual -> VK_COMPARE_OP_LESS_OR_EQUAL
+    ComparisonFunc.Greater -> VK_COMPARE_OP_GREATER
+    ComparisonFunc.NotEqual -> VK_COMPARE_OP_NOT_EQUAL
+    ComparisonFunc.GreaterOrEqual -> VK_COMPARE_OP_GREATER_OR_EQUAL
+    ComparisonFunc.Always -> VK_COMPARE_OP_ALWAYS
+}
 
 internal fun CullMode.toVkCullMode(): VkCullModeFlags = when (this) {
     CullMode.Back -> VK_CULL_MODE_BACK_BIT
@@ -90,6 +121,17 @@ internal fun PrimitiveType.toVkPrimitiveTopology(): VkPrimitiveTopology =
         PrimitiveType.TriangleList -> VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
         PrimitiveType.TriangleStrip -> VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
     }
+
+internal fun StencilOp.toVkStencilOp(): VkStencilOp = when (this) {
+    StencilOp.Keep -> VK_STENCIL_OP_KEEP
+    StencilOp.Zero -> VK_STENCIL_OP_ZERO
+    StencilOp.Replace -> VK_STENCIL_OP_REPLACE
+    StencilOp.Invert -> VK_STENCIL_OP_INVERT
+    StencilOp.IncrementAndClamp -> VK_STENCIL_OP_INCREMENT_AND_CLAMP
+    StencilOp.DecrementAndClamp -> VK_STENCIL_OP_DECREMENT_AND_CLAMP
+    StencilOp.IncrementAndWrap -> VK_STENCIL_OP_INCREMENT_AND_WRAP
+    StencilOp.DecrementAndWrap -> VK_STENCIL_OP_DECREMENT_AND_WRAP
+}
 
 internal fun VertexAttribute.Type.toVkFormat(): VkFormat =
     when (this) {

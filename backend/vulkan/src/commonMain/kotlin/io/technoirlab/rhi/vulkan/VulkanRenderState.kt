@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.vulkan
 
+import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.Shader
@@ -21,6 +22,7 @@ internal class VulkanRenderState(
     override val vertexShader: Shader,
     override val fragmentShader: Shader,
     override val rasterState: RasterState,
+    override val depthStencilState: DepthStencilState,
     override var pushConstants: ByteArray? = null
 ) : RenderState {
 

@@ -1,6 +1,7 @@
 package io.technoirlab.rhi.vulkan
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
@@ -8,6 +9,7 @@ import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
+import io.technoirlab.rhi.core.StencilOpState
 import io.technoirlab.rhi.core.WindowHandle
 import io.technoirlab.rhi.core.config.RendererConfig
 import io.technoirlab.rhi.core.geometry.IndexBuffer
@@ -22,12 +24,12 @@ import io.technoirlab.rhi.vulkan.geometry.VulkanVertexBuffer
 import io.technoirlab.volk.VK_BUFFER_USAGE_INDEX_BUFFER_BIT
 import io.technoirlab.volk.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 import io.technoirlab.volk.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
-import io.technoirlab.volk.VK_COMPARE_OP_LESS_OR_EQUAL
 import io.technoirlab.volk.VK_DYNAMIC_STATE_CULL_MODE
 import io.technoirlab.volk.VK_DYNAMIC_STATE_FRONT_FACE
 import io.technoirlab.volk.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY
 import io.technoirlab.volk.VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT
 import io.technoirlab.volk.VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT
+import io.technoirlab.volk.VK_FALSE
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_UNDEFINED
 import io.technoirlab.volk.VK_IMAGE_TILING_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_TYPE_2D
@@ -45,6 +47,7 @@ import io.technoirlab.volk.VkFormatVar
 import io.technoirlab.volk.VkImageUsageFlags
 import io.technoirlab.volk.VkPipelineColorBlendAttachmentState
 import io.technoirlab.volk.VkPushConstantRange
+import io.technoirlab.volk.VkStencilOpState
 import io.technoirlab.volk.VkVertexInputAttributeDescription
 import io.technoirlab.volk.VkVertexInputBindingDescription
 import io.technoirlab.vulkan.CommandPool
@@ -184,6 +187,7 @@ internal class VulkanDevice(
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState,
+        depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
     ): RenderState = memScoped {
         require(vertexBuffer is VulkanVertexBuffer)
@@ -259,9 +263,12 @@ internal class VulkanDevice(
             },
             depthStencilState = {
                 if (renderTarget.depthStencil != null) {
-                    depthTestEnable = VK_TRUE
-                    depthWriteEnable = VK_TRUE
-                    depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL
+                    depthTestEnable = if (depthStencilState.depthTestEnable) VK_TRUE else VK_FALSE
+                    depthWriteEnable = if (depthStencilState.depthWriteEnable) VK_TRUE else VK_FALSE
+                    depthCompareOp = depthStencilState.depthCompare.toVkCompareOp()
+                    stencilTestEnable = if (depthStencilState.stencilEnable) VK_TRUE else VK_FALSE
+                    back.set(depthStencilState, depthStencilState.stencilBack)
+                    front.set(depthStencilState, depthStencilState.stencilFront)
                 }
             },
             dynamicState = {
@@ -294,6 +301,7 @@ internal class VulkanDevice(
             pipelineLayout = pipelineLayout,
             pipelineCache = pipelineCache,
             rasterState = rasterState,
+            depthStencilState = depthStencilState,
             pushConstants = pushConstants
         )
     }
@@ -337,4 +345,14 @@ internal class VulkanDevice(
             sharingMode = VK_SHARING_MODE_EXCLUSIVE
             initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
         }
+
+    private fun VkStencilOpState.set(depthStencilState: DepthStencilState, stencilOpState: StencilOpState) {
+        failOp = stencilOpState.failOp.toVkStencilOp()
+        passOp = stencilOpState.passOp.toVkStencilOp()
+        depthFailOp = stencilOpState.depthFailOp.toVkStencilOp()
+        compareOp = stencilOpState.stencilFunc.toVkCompareOp()
+        compareMask = depthStencilState.stencilReadMask.toUInt()
+        writeMask = depthStencilState.stencilWriteMask.toUInt()
+        reference = depthStencilState.stencilRefValue.toUInt()
+    }
 }
