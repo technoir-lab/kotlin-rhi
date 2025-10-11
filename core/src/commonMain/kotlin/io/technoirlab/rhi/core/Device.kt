@@ -24,6 +24,7 @@ interface Device : AutoCloseable {
         primitiveType: PrimitiveType,
         vertexShader: Shader,
         fragmentShader: Shader,
+        rasterState: RasterState = RasterState(),
         pushConstants: ByteArray? = null
     ): RenderState
 }

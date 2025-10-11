@@ -10,5 +10,6 @@ interface RenderState : AutoCloseable {
     val primitiveType: PrimitiveType
     val vertexShader: Shader
     val fragmentShader: Shader
+    val rasterState: RasterState
     var pushConstants: ByteArray?
 }

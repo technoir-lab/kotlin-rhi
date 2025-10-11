@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.vulkan
 
+import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.Shader
 import io.technoirlab.rhi.core.geometry.IndexBuffer
@@ -19,6 +20,7 @@ internal class VulkanRenderState(
     override val primitiveType: PrimitiveType,
     override val vertexShader: Shader,
     override val fragmentShader: Shader,
+    override val rasterState: RasterState,
     override var pushConstants: ByteArray? = null
 ) : RenderState {
 

@@ -17,8 +17,6 @@ import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_ATTACHMENT_LOAD_OP_CLEAR
 import io.technoirlab.volk.VK_ATTACHMENT_STORE_OP_STORE
 import io.technoirlab.volk.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-import io.technoirlab.volk.VK_CULL_MODE_BACK_BIT
-import io.technoirlab.volk.VK_FRONT_FACE_COUNTER_CLOCKWISE
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
@@ -192,8 +190,8 @@ class VulkanRenderer : Renderer {
             extent.width = frameState.image.extent.width
             extent.height = frameState.image.extent.height
         }
-        commandBuffer.setCullMode(VK_CULL_MODE_BACK_BIT)
-        commandBuffer.setFrontFace(VK_FRONT_FACE_COUNTER_CLOCKWISE)
+        commandBuffer.setCullMode(renderState.rasterState.cullMode.toVkCullMode())
+        commandBuffer.setFrontFace(renderState.rasterState.frontFace.toVkFrontFace())
 
         renderState.pushConstants?.let { pushConstants ->
             commandBuffer.pushConstants(renderState.pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushConstants)

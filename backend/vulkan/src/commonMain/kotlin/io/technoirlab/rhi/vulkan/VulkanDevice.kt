@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
+import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
@@ -22,18 +23,15 @@ import io.technoirlab.volk.VK_BUFFER_USAGE_INDEX_BUFFER_BIT
 import io.technoirlab.volk.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 import io.technoirlab.volk.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
 import io.technoirlab.volk.VK_COMPARE_OP_LESS_OR_EQUAL
-import io.technoirlab.volk.VK_CULL_MODE_BACK_BIT
 import io.technoirlab.volk.VK_DYNAMIC_STATE_CULL_MODE
 import io.technoirlab.volk.VK_DYNAMIC_STATE_FRONT_FACE
 import io.technoirlab.volk.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY
 import io.technoirlab.volk.VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT
 import io.technoirlab.volk.VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT
-import io.technoirlab.volk.VK_FRONT_FACE_COUNTER_CLOCKWISE
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_UNDEFINED
 import io.technoirlab.volk.VK_IMAGE_TILING_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_TYPE_2D
 import io.technoirlab.volk.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-import io.technoirlab.volk.VK_POLYGON_MODE_FILL
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_FRAGMENT_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_VERTEX_BIT
@@ -185,6 +183,7 @@ internal class VulkanDevice(
         primitiveType: PrimitiveType,
         vertexShader: Shader,
         fragmentShader: Shader,
+        rasterState: RasterState,
         pushConstants: ByteArray?
     ): RenderState = memScoped {
         require(vertexBuffer is VulkanVertexBuffer)
@@ -250,9 +249,9 @@ internal class VulkanDevice(
                 topology = primitiveType.toVkPrimitiveTopology()
             },
             rasterizationState = {
-                cullMode = VK_CULL_MODE_BACK_BIT
-                frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE
-                polygonMode = VK_POLYGON_MODE_FILL
+                cullMode = rasterState.cullMode.toVkCullMode()
+                frontFace = rasterState.frontFace.toVkFrontFace()
+                polygonMode = rasterState.fillMode.toVkPolygonMode()
                 lineWidth = 1.0f
             },
             multisampleState = {
@@ -294,6 +293,7 @@ internal class VulkanDevice(
             pipeline = pipeline,
             pipelineLayout = pipelineLayout,
             pipelineCache = pipelineCache,
+            rasterState = rasterState,
             pushConstants = pushConstants
         )
     }

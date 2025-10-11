@@ -4,6 +4,7 @@ import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
 import io.technoirlab.rhi.core.Image2D
+import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
@@ -47,6 +48,7 @@ class MockDevice : Device {
         primitiveType: PrimitiveType,
         vertexShader: Shader,
         fragmentShader: Shader,
+        rasterState: RasterState,
         pushConstants: ByteArray?
     ): RenderState {
         TODO("Not yet implemented")
