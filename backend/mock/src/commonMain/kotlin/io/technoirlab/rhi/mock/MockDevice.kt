@@ -14,31 +14,27 @@ import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 import io.technoirlab.rhi.core.geometry.VertexLayout
+import io.technoirlab.rhi.mock.geometry.MockIndexBuffer
+import io.technoirlab.rhi.mock.geometry.MockVertexBuffer
 import kotlinx.io.Source
 
 class MockDevice : Device {
     override fun createDepthStencilBuffer(
         extent: Extent2D,
         format: Format
-    ): Texture {
-        TODO("Not yet implemented")
-    }
+    ): Texture = MockTexture(extent, format, sampleCount = 1u)
 
     override fun createVertexBuffer(
         source: Source,
         size: UInt,
         vertexLayout: VertexLayout
-    ): VertexBuffer {
-        TODO("Not yet implemented")
-    }
+    ): VertexBuffer = MockVertexBuffer(size, vertexLayout)
 
     override fun createIndexBuffer(
         source: Source,
         size: UInt,
         indexType: IndexType
-    ): IndexBuffer {
-        TODO("Not yet implemented")
-    }
+    ): IndexBuffer = MockIndexBuffer(size, indexType)
 
     override fun loadShader(source: Source): Shader = MockShader()
 
@@ -52,9 +48,16 @@ class MockDevice : Device {
         rasterState: RasterState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
-    ): RenderState {
-        TODO("Not yet implemented")
-    }
+    ): RenderState = MockRenderState(
+        vertexBuffer = vertexBuffer,
+        indexBuffer = indexBuffer,
+        primitiveType = primitiveType,
+        vertexShader = vertexShader,
+        fragmentShader = fragmentShader,
+        rasterState = rasterState,
+        depthStencilState = depthStencilState,
+        pushConstants = pushConstants
+    )
 
     override fun close() = Unit
 }
