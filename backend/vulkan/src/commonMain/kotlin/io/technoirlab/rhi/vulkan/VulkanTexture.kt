@@ -2,7 +2,7 @@ package io.technoirlab.rhi.vulkan
 
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
-import io.technoirlab.rhi.core.Image2D
+import io.technoirlab.rhi.core.Texture
 import io.technoirlab.volk.VK_COMPONENT_SWIZZLE_IDENTITY
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_UNDEFINED
 import io.technoirlab.volk.VK_IMAGE_VIEW_TYPE_2D
@@ -16,7 +16,7 @@ import io.technoirlab.vulkan.ImageView
 import kotlinx.cinterop.MemScope
 
 @Suppress("LongParameterList")
-internal class VulkanImage2D(
+internal class VulkanTexture(
     override val extent: Extent2D,
     override val format: Format,
     override val sampleCount: UInt,
@@ -25,7 +25,7 @@ internal class VulkanImage2D(
     val aspectMask: VkImageAspectFlags,
     var layout: VkImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     private val memory: DeviceMemory? = null
-) : Image2D {
+) : Texture {
 
     override fun close() {
         imageView.close()

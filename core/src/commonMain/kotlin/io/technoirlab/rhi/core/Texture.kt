@@ -1,6 +1,6 @@
 package io.technoirlab.rhi.core
 
-interface Image2D : AutoCloseable {
+interface Texture : AutoCloseable {
     val extent: Extent2D
     val format: Format
     val sampleCount: UInt

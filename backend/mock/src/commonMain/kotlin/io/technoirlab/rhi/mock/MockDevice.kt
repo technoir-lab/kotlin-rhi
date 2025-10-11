@@ -4,11 +4,11 @@ import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
-import io.technoirlab.rhi.core.Image2D
 import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
+import io.technoirlab.rhi.core.Texture
 import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
@@ -20,7 +20,7 @@ class MockDevice : Device {
     override fun createDepthStencilBuffer(
         extent: Extent2D,
         format: Format
-    ): Image2D {
+    ): Texture {
         TODO("Not yet implemented")
     }
 

@@ -48,25 +48,25 @@ internal class VulkanSwapChain(
 
     private val logger = KotlinLogging.logger("VulkanRenderer")
     private var swapChain: Swapchain
-    private var imageState: List<VulkanImageState>
+    private var textureStates: List<VulkanTextureState>
     private val frameInFlightState: List<VulkanFrameInFlightState>
     private var frameIndex = 0
-    private var currentImageIndex = -1
+    private var currentTextureIndex = -1
 
     override val arraySize: Int get() = 1
-    override val colorFormat: Format get() = spec.imageFormat
-    override val extent: Extent2D get() = imageState.first().image.extent
-    override val images: List<VulkanImage2D> get() = listOf(imageState[currentImageIndex].image)
-    override var depthStencil: VulkanImage2D?
+    override val colorFormat: Format get() = spec.format
+    override val extent: Extent2D get() = textureStates.first().texture.extent
+    override val textures: List<VulkanTexture> get() = listOf(textureStates[currentTextureIndex].texture)
+    override var depthStencil: VulkanTexture?
     override val clearValues: ClearValues get() = spec.clearValues
 
     init {
         memScoped {
             val surfaceCapabilities = physicalDevice.device.getSurfaceCapabilities(surface)
-            val imageExtent = chooseImageExtent(surfaceCapabilities)
-            swapChain = createSwapChain(surface, spec, imageExtent)
-            imageState = createImages(device.device, swapChain, imageExtent, spec.imageFormat)
-            depthStencil = spec.depthStencilFormat?.let { device.createDepthStencilBuffer(imageExtent, spec.depthStencilFormat) }
+            val extent = chooseTextureExtent(surfaceCapabilities)
+            swapChain = createSwapChain(surface, spec, extent)
+            textureStates = createImages(device.device, swapChain, extent, spec.format)
+            depthStencil = spec.depthStencilFormat?.let { device.createDepthStencilBuffer(extent, spec.depthStencilFormat) }
 
             frameInFlightState = List(NUM_FRAMES_IN_FLIGHT) {
                 VulkanFrameInFlightState(
@@ -81,7 +81,7 @@ internal class VulkanSwapChain(
 
     override fun close() {
         frameInFlightState.forEach { it.close() }
-        imageState.forEach { it.close() }
+        textureStates.forEach { it.close() }
         depthStencil?.close()
         swapChain.close()
     }
@@ -95,7 +95,7 @@ internal class VulkanSwapChain(
     }
 
     context(memScope: MemScope)
-    fun acquireNextImage(): VulkanFrameState {
+    fun acquireNextTexture(): VulkanFrameState {
         val frameInFlightState = frameInFlightState[frameIndex]
         val frameFence = frameInFlightState.submitFence
         val acquireSemaphore = frameInFlightState.acquireSemaphore
@@ -118,16 +118,16 @@ internal class VulkanSwapChain(
             recreate = true
         }
 
-        val imageIndex = result.payload
-        currentImageIndex = imageIndex.toInt()
-        val imageState = imageState[currentImageIndex]
+        val textureIndex = result.payload
+        currentTextureIndex = textureIndex.toInt()
+        val textureState = textureStates[currentTextureIndex]
         return VulkanFrameState(
-            imageIndex = imageIndex,
-            image = imageState.image,
+            textureIndex = textureIndex,
+            texture = textureState.texture,
             depthStencil = depthStencil,
             commandBuffer = frameInFlightState.commandBuffer,
             acquireSemaphore = acquireSemaphore,
-            submitSemaphore = imageState.submitSemaphore,
+            submitSemaphore = textureState.submitSemaphore,
             submitFence = frameFence,
             recreate = recreate
         )
@@ -164,7 +164,7 @@ internal class VulkanSwapChain(
         require(frameState is VulkanFrameState)
         val result = device.presentQueue.present(
             swapChain = swapChain,
-            imageIndex = frameState.imageIndex,
+            imageIndex = frameState.textureIndex,
             waitSemaphores = listOf(frameState.submitSemaphore)
         )
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -183,18 +183,18 @@ internal class VulkanSwapChain(
         device.presentQueue.waitIdle()
 
         val oldSwapChain = swapChain
-        val oldExtent = imageState.first().image.extent
+        val oldExtent = textureStates.first().texture.extent
         val surfaceCapabilities = physicalDevice.device.getSurfaceCapabilities(surface)
-        val imageExtent = chooseImageExtent(surfaceCapabilities)
+        val textureExtent = chooseTextureExtent(surfaceCapabilities)
 
-        imageState.forEach { it.close() }
-        swapChain = createSwapChain(surface, spec, imageExtent, oldSwapChain)
-        imageState = createImages(device.device, swapChain, imageExtent, spec.imageFormat)
+        textureStates.forEach { it.close() }
+        swapChain = createSwapChain(surface, spec, textureExtent, oldSwapChain)
+        textureStates = createImages(device.device, swapChain, textureExtent, spec.format)
         oldSwapChain.close()
 
-        if (imageExtent != oldExtent) {
+        if (textureExtent != oldExtent) {
             depthStencil?.close()
-            depthStencil = spec.depthStencilFormat?.let { device.createDepthStencilBuffer(imageExtent, spec.depthStencilFormat) }
+            depthStencil = spec.depthStencilFormat?.let { device.createDepthStencilBuffer(textureExtent, spec.depthStencilFormat) }
         }
     }
 
@@ -207,9 +207,9 @@ internal class VulkanSwapChain(
     ): Swapchain {
         val queueFamilyIndices = listOf(device.graphicsQueue.familyIndex, device.presentQueue.familyIndex).distinct()
         return device.device.createSwapchain {
-            minImageCount = spec.imageCount
-            imageFormat = spec.imageFormat.toVkFormat()
-            imageColorSpace = spec.imageColorSpace
+            minImageCount = spec.textureCount
+            imageFormat = spec.format.toVkFormat()
+            imageColorSpace = spec.colorSpace
             imageExtent.width = extent.width
             imageExtent.height = extent.height
             imageArrayLayers = 1u
@@ -227,11 +227,11 @@ internal class VulkanSwapChain(
     }
 
     context(memScope: MemScope)
-    private fun createImages(device: Device, swapchain: Swapchain, extent: Extent2D, format: Format): List<VulkanImageState> =
+    private fun createImages(device: Device, swapchain: Swapchain, extent: Extent2D, format: Format): List<VulkanTextureState> =
         swapchain.getImages().map { image ->
             val aspectMask = getAspectMask(format)
             val imageView = device.createImageView2D(image, format.toVkFormat(), aspectMask)
-            val image = VulkanImage2D(
+            val texture = VulkanTexture(
                 format = format,
                 extent = extent,
                 sampleCount = VK_SAMPLE_COUNT_1_BIT,
@@ -239,10 +239,10 @@ internal class VulkanSwapChain(
                 imageView = imageView,
                 aspectMask = aspectMask
             )
-            VulkanImageState(image, submitSemaphore = device.createSemaphore())
+            VulkanTextureState(texture, submitSemaphore = device.createSemaphore())
         }
 
-    private fun chooseImageExtent(surfaceCapabilities: VkSurfaceCapabilitiesKHR): Extent2D =
+    private fun chooseTextureExtent(surfaceCapabilities: VkSurfaceCapabilitiesKHR): Extent2D =
         if (surfaceCapabilities.currentExtent.width != UInt.MAX_VALUE) {
             surfaceCapabilities.currentExtent.toExtent2D()
         } else {
@@ -255,14 +255,14 @@ internal class VulkanSwapChain(
 
     private fun VkExtent2D.toExtent2D(): Extent2D = Extent2D(width, height)
 
-    private class VulkanImageState(
-        val image: VulkanImage2D,
+    private class VulkanTextureState(
+        val texture: VulkanTexture,
         val submitSemaphore: Semaphore
     ) : AutoCloseable {
 
         override fun close() {
             submitSemaphore.close()
-            image.close()
+            texture.close()
         }
     }
 

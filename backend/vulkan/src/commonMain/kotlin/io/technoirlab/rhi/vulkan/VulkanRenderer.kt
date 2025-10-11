@@ -105,14 +105,14 @@ class VulkanRenderer : Renderer {
     override fun prepare(): FrameState = memScoped {
         val swapChain = checkNotNull(swapChain)
 
-        val frameState = swapChain.acquireNextImage()
+        val frameState = swapChain.acquireNextTexture()
         val commandBuffer = frameState.commandBuffer
         commandBuffer.begin {
             flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
         }
         commandBuffer.transitionImageLayout(
-            image = frameState.image,
-            oldLayout = frameState.image.layout,
+            texture = frameState.texture,
+            oldLayout = frameState.texture.layout,
             newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             srcAccessMask = VK_ACCESS_2_NONE,
             dstAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
@@ -121,7 +121,7 @@ class VulkanRenderer : Renderer {
         )
         frameState.depthStencil?.let { depthStencil ->
             commandBuffer.transitionImageLayout(
-                image = depthStencil,
+                texture = depthStencil,
                 oldLayout = depthStencil.layout,
                 newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                 srcAccessMask = VK_ACCESS_2_NONE,
@@ -141,7 +141,7 @@ class VulkanRenderer : Renderer {
         val commandBuffer = frameState.commandBuffer
         commandBuffer.endRendering()
         commandBuffer.transitionImageLayout(
-            image = frameState.image,
+            texture = frameState.texture,
             oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
             srcAccessMask = VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT,
@@ -151,7 +151,7 @@ class VulkanRenderer : Renderer {
         )
         frameState.depthStencil?.let { depthStencil ->
             commandBuffer.transitionImageLayout(
-                image = depthStencil,
+                texture = depthStencil,
                 oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                 newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
                 srcAccessMask = VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
@@ -181,14 +181,14 @@ class VulkanRenderer : Renderer {
             y = 0.0f
             minDepth = 0.0f
             maxDepth = 1.0f
-            width = frameState.image.extent.width.toFloat()
-            height = frameState.image.extent.height.toFloat()
+            width = frameState.texture.extent.width.toFloat()
+            height = frameState.texture.extent.height.toFloat()
         }
         commandBuffer.setScissorWithCount(count = 1u) {
             offset.x = 0
             offset.y = 0
-            extent.width = frameState.image.extent.width
-            extent.height = frameState.image.extent.height
+            extent.width = frameState.texture.extent.width
+            extent.height = frameState.texture.extent.height
         }
         commandBuffer.setCullMode(renderState.rasterState.cullMode.toVkCullMode())
         commandBuffer.setFrontFace(renderState.rasterState.frontFace.toVkFrontFace())
@@ -267,13 +267,13 @@ class VulkanRenderer : Renderer {
 
     context(memScope: MemScope)
     private fun CommandBuffer.beginRendering(renderTarget: RenderTarget) {
-        val attachmentCount = renderTarget.images.size
+        val attachmentCount = renderTarget.textures.size
 
         @Suppress("MagicNumber")
         val colorAttachments = memScope.allocArray<VkRenderingAttachmentInfo>(attachmentCount) { index ->
-            val image = renderTarget.images[index] as VulkanImage2D
+            val texture = renderTarget.textures[index] as VulkanTexture
             sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO
-            imageView = image.imageView.handle
+            imageView = texture.imageView.handle
             imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
             loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
             storeOp = VK_ATTACHMENT_STORE_OP_STORE
@@ -284,7 +284,7 @@ class VulkanRenderer : Renderer {
         }
 
         val depthStencilAttachment = renderTarget.depthStencil?.let { depthStencil ->
-            check(depthStencil is VulkanImage2D)
+            check(depthStencil is VulkanTexture)
             memScope.alloc<VkRenderingAttachmentInfo> {
                 sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO
                 imageView = depthStencil.imageView.handle
@@ -310,7 +310,7 @@ class VulkanRenderer : Renderer {
     context(memScope: MemScope)
     @Suppress("LongParameterList")
     private fun CommandBuffer.transitionImageLayout(
-        image: VulkanImage2D,
+        texture: VulkanTexture,
         oldLayout: VkImageLayout,
         newLayout: VkImageLayout,
         srcAccessMask: VkAccessFlags2,
@@ -318,8 +318,8 @@ class VulkanRenderer : Renderer {
         srcStage: VkPipelineStageFlags2,
         dstStage: VkPipelineStageFlags2
     ) = imageMemoryBarrier {
-        check(image.layout == oldLayout) { "Expected image layout to be $oldLayout but was ${image.layout}" }
-        image.layout = newLayout
+        check(texture.layout == oldLayout) { "Expected texture layout to be $oldLayout but was ${texture.layout}" }
+        texture.layout = newLayout
         this.srcStageMask = srcStage
         this.srcAccessMask = srcAccessMask
         this.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED
@@ -328,8 +328,8 @@ class VulkanRenderer : Renderer {
         this.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED
         this.oldLayout = oldLayout
         this.newLayout = newLayout
-        this.image = image.image.handle
-        this.subresourceRange.aspectMask = image.aspectMask
+        this.image = texture.image.handle
+        this.subresourceRange.aspectMask = texture.aspectMask
         this.subresourceRange.baseArrayLayer = 0u
         this.subresourceRange.layerCount = 1u
         this.subresourceRange.baseMipLevel = 0u

@@ -105,17 +105,17 @@ internal class VulkanPhysicalDevice(val device: PhysicalDevice) {
                 "currentTransform=${surfaceCapabilities.currentTransform}"
         }
 
-        val desiredImageCount = if (config.tripleBuffering) 3u else 2u
-        val imageCount = if (surfaceCapabilities.maxImageCount > 0u) {
-            desiredImageCount.coerceIn(surfaceCapabilities.minImageCount, surfaceCapabilities.maxImageCount)
+        val desiredTextureCount = if (config.tripleBuffering) 3u else 2u
+        val textureCount = if (surfaceCapabilities.maxImageCount > 0u) {
+            desiredTextureCount.coerceIn(surfaceCapabilities.minImageCount, surfaceCapabilities.maxImageCount)
         } else {
-            desiredImageCount.coerceAtLeast(surfaceCapabilities.minImageCount)
+            desiredTextureCount.coerceAtLeast(surfaceCapabilities.minImageCount)
         }
         val depthStencilFormat = if (config.depthStencilBuffer) chooseDepthStencilFormat() else null
         return VulkanSwapChainSpec(
-            imageCount = imageCount,
-            imageFormat = surfaceFormat.first,
-            imageColorSpace = surfaceFormat.second,
+            textureCount = textureCount,
+            format = surfaceFormat.first,
+            colorSpace = surfaceFormat.second,
             presentMode = presentMode,
             transform = surfaceCapabilities.currentTransform,
             depthStencilFormat = depthStencilFormat

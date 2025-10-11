@@ -7,9 +7,9 @@ import io.technoirlab.vulkan.Semaphore
 
 @Suppress("LongParameterList")
 internal class VulkanFrameState(
-    val imageIndex: UInt,
-    val image: VulkanImage2D,
-    val depthStencil: VulkanImage2D?,
+    val textureIndex: UInt,
+    val texture: VulkanTexture,
+    val depthStencil: VulkanTexture?,
     val commandBuffer: CommandBuffer,
     val acquireSemaphore: Semaphore,
     val submitSemaphore: Semaphore,

@@ -120,7 +120,7 @@ internal class VulkanDevice(
         device.close()
     }
 
-    override fun createDepthStencilBuffer(extent: Extent2D, format: Format): VulkanImage2D = memScoped {
+    override fun createDepthStencilBuffer(extent: Extent2D, format: Format): VulkanTexture = memScoped {
         logger.info { "Creating depth stencil buffer $extent $format" }
 
         val sampleCount = VK_SAMPLE_COUNT_1_BIT
@@ -129,7 +129,7 @@ internal class VulkanDevice(
         val memory = memoryManager.allocateImageMemory(image)
         val aspectMask = getAspectMask(format)
         val imageView = device.createImageView2D(image, vkFormat, aspectMask)
-        VulkanImage2D(
+        VulkanTexture(
             format = format,
             extent = extent,
             sampleCount = sampleCount,

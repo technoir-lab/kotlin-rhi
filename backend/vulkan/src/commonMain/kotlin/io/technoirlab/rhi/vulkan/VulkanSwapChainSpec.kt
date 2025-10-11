@@ -8,9 +8,9 @@ import io.technoirlab.volk.VkPresentModeKHR
 import io.technoirlab.volk.VkSurfaceTransformFlagBitsKHR
 
 internal data class VulkanSwapChainSpec(
-    val imageCount: UInt,
-    val imageFormat: Format,
-    val imageColorSpace: VkColorSpaceKHR,
+    val textureCount: UInt,
+    val format: Format,
+    val colorSpace: VkColorSpaceKHR,
     val presentMode: VkPresentModeKHR,
     val transform: VkSurfaceTransformFlagBitsKHR,
     val depthStencilFormat: Format?,
@@ -20,7 +20,7 @@ internal data class VulkanSwapChainSpec(
     )
 ) {
     override fun toString(): String =
-        "VulkanSwapChainSpec(imageCount=$imageCount, imageFormat=$imageFormat, " +
-            "imageColorSpace=${vkColorSpaceToString(imageColorSpace)}, presentMode=${vkPresentModeToString(presentMode)}, " +
+        "VulkanSwapChainSpec(textureCount=$textureCount, format=$format, " +
+            "colorSpace=${vkColorSpaceToString(colorSpace)}, presentMode=${vkPresentModeToString(presentMode)}, " +
             "transform=${vkSurfaceTransformFlagBitsToString(transform)}, depthStencilFormat=$depthStencilFormat}, clearValues=$clearValues)"
 }

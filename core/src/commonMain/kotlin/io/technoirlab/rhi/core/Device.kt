@@ -8,7 +8,7 @@ import io.technoirlab.rhi.core.geometry.VertexLayout
 import kotlinx.io.Source
 
 interface Device : AutoCloseable {
-    fun createDepthStencilBuffer(extent: Extent2D, format: Format): Image2D
+    fun createDepthStencilBuffer(extent: Extent2D, format: Format): Texture
 
     fun createVertexBuffer(source: Source, size: UInt, vertexLayout: VertexLayout): VertexBuffer
 
