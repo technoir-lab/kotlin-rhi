@@ -16,9 +16,13 @@ import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 import io.technoirlab.rhi.core.geometry.VertexLayout
+import io.ygdrasil.webgpu.WGPUContext
 import kotlinx.io.Source
 
-class WebGpuDevice : Device {
+internal class WebGpuDevice(
+    private val context: WGPUContext
+) : Device {
+
     override fun createDepthStencilBuffer(
         extent: Extent2D,
         format: Format
@@ -57,9 +61,18 @@ class WebGpuDevice : Device {
         blendState: BlendState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
-    ): GraphicsState {
-        TODO("Not yet implemented")
-    }
+    ): GraphicsState = WebGpuGraphicsState(
+        vertexBuffer = vertexBuffer,
+        indexBuffer = indexBuffer,
+        primitiveType = primitiveType,
+        vertexShader = vertexShader,
+        fragmentShader = fragmentShader,
+        rasterState = rasterState,
+        depthStencilState = depthStencilState,
+        pushConstants = pushConstants
+    )
 
-    override fun close() = Unit
+    override fun close() {
+        context.close()
+    }
 }

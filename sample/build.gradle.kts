@@ -30,6 +30,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core"))
+            implementation(libs.kotlinx.coroutines.core)
         }
         nativeMain.dependencies {
             implementation(project(":backend:vulkan"))

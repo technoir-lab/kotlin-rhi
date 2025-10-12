@@ -83,7 +83,7 @@ class VulkanRenderer : Renderer {
         }
     }
 
-    override fun createDevice(window: WindowHandle, config: RendererConfig): Device = memScoped {
+    override suspend fun createDevice(window: WindowHandle, config: RendererConfig): Device = memScoped {
         logger.info { "Creating surface" }
         val surface = instance.createSurface(window).also { surface = it }
 
