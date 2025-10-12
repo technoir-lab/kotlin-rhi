@@ -3,7 +3,7 @@ package io.technoirlab.rhi.vulkan
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.FrameState
-import io.technoirlab.rhi.core.RenderState
+import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Renderer
 import io.technoirlab.rhi.core.WindowHandle
@@ -166,16 +166,16 @@ class VulkanRenderer : Renderer {
         swapChain.present(frameState)
     }
 
-    override fun render(frameState: FrameState, renderState: RenderState) = memScoped {
+    override fun render(frameState: FrameState, graphicsState: GraphicsState) = memScoped {
         require(frameState is VulkanFrameState)
-        require(renderState is VulkanRenderState)
-        require(renderState.vertexBuffer is VulkanVertexBuffer)
-        require(renderState.indexBuffer is VulkanIndexBuffer)
+        require(graphicsState is VulkanGraphicsState)
+        require(graphicsState.vertexBuffer is VulkanVertexBuffer)
+        require(graphicsState.indexBuffer is VulkanIndexBuffer)
 
         val commandBuffer = frameState.commandBuffer
 
-        commandBuffer.bindPipeline(renderState.pipeline)
-        commandBuffer.setPrimitiveTopology(renderState.primitiveType.toVkPrimitiveTopology())
+        commandBuffer.bindPipeline(graphicsState.pipeline)
+        commandBuffer.setPrimitiveTopology(graphicsState.primitiveType.toVkPrimitiveTopology())
         commandBuffer.setViewportWithCount(count = 1u) {
             x = 0.0f
             y = 0.0f
@@ -190,16 +190,16 @@ class VulkanRenderer : Renderer {
             extent.width = frameState.texture.extent.width
             extent.height = frameState.texture.extent.height
         }
-        commandBuffer.setCullMode(renderState.rasterState.cullMode.toVkCullMode())
-        commandBuffer.setFrontFace(renderState.rasterState.frontFace.toVkFrontFace())
+        commandBuffer.setCullMode(graphicsState.rasterState.cullMode.toVkCullMode())
+        commandBuffer.setFrontFace(graphicsState.rasterState.frontFace.toVkFrontFace())
 
-        renderState.pushConstants?.let { pushConstants ->
-            commandBuffer.pushConstants(renderState.pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushConstants)
+        graphicsState.pushConstants?.let { pushConstants ->
+            commandBuffer.pushConstants(graphicsState.pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushConstants)
         }
 
-        commandBuffer.bindVertexBuffer(renderState.vertexBuffer.buffer)
-        commandBuffer.bindIndexBuffer(renderState.indexBuffer.buffer, renderState.indexBuffer.indexType.toVkIndexType(), size = 0u)
-        commandBuffer.drawIndexed(renderState.indexBuffer.size)
+        commandBuffer.bindVertexBuffer(graphicsState.vertexBuffer.buffer)
+        commandBuffer.bindIndexBuffer(graphicsState.indexBuffer.buffer, graphicsState.indexBuffer.indexType.toVkIndexType(), size = 0u)
+        commandBuffer.drawIndexed(graphicsState.indexBuffer.size)
     }
 
     override fun reset(): Unit = memScoped {

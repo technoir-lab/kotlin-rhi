@@ -9,7 +9,7 @@ interface Renderer : AutoCloseable {
 
     fun present(frameState: FrameState)
 
-    fun render(frameState: FrameState, renderState: RenderState)
+    fun render(frameState: FrameState, graphicsState: GraphicsState)
 
     fun reset()
 }

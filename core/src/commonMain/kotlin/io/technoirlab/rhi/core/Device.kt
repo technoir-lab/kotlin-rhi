@@ -17,7 +17,7 @@ interface Device : AutoCloseable {
     fun loadShader(source: Source): Shader
 
     @Suppress("LongParameterList")
-    fun createRenderState(
+    fun createGraphicsState(
         renderTarget: RenderTarget,
         vertexBuffer: VertexBuffer,
         indexBuffer: IndexBuffer,
@@ -27,5 +27,5 @@ interface Device : AutoCloseable {
         rasterState: RasterState = RasterState(),
         depthStencilState: DepthStencilState = DepthStencilState(),
         pushConstants: ByteArray? = null
-    ): RenderState
+    ): GraphicsState
 }

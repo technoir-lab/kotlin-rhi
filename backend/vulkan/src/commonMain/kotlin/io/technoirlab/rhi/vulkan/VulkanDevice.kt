@@ -5,8 +5,8 @@ import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
+import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
-import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
 import io.technoirlab.rhi.core.StencilOpState
@@ -179,7 +179,7 @@ internal class VulkanDevice(
     }
 
     @Suppress("LongMethod")
-    override fun createRenderState(
+    override fun createGraphicsState(
         renderTarget: RenderTarget,
         vertexBuffer: VertexBuffer,
         indexBuffer: IndexBuffer,
@@ -189,7 +189,7 @@ internal class VulkanDevice(
         rasterState: RasterState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
-    ): RenderState = memScoped {
+    ): GraphicsState = memScoped {
         require(vertexBuffer is VulkanVertexBuffer)
         require(indexBuffer is VulkanIndexBuffer)
         require(vertexShader is VulkanShader)
@@ -291,7 +291,7 @@ internal class VulkanDevice(
             },
             cache = pipelineCache
         )
-        return VulkanRenderState(
+        return VulkanGraphicsState(
             vertexBuffer = vertexBuffer,
             indexBuffer = indexBuffer,
             primitiveType = primitiveType,

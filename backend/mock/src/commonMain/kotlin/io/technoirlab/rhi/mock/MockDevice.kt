@@ -4,8 +4,8 @@ import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
+import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
-import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
 import io.technoirlab.rhi.core.Texture
@@ -38,7 +38,7 @@ class MockDevice : Device {
 
     override fun loadShader(source: Source): Shader = MockShader()
 
-    override fun createRenderState(
+    override fun createGraphicsState(
         renderTarget: RenderTarget,
         vertexBuffer: VertexBuffer,
         indexBuffer: IndexBuffer,
@@ -48,7 +48,7 @@ class MockDevice : Device {
         rasterState: RasterState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
-    ): RenderState = MockRenderState(
+    ): GraphicsState = MockGraphicsState(
         vertexBuffer = vertexBuffer,
         indexBuffer = indexBuffer,
         primitiveType = primitiveType,

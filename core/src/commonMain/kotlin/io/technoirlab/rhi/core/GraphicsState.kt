@@ -4,7 +4,7 @@ import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 
-interface RenderState : AutoCloseable {
+interface GraphicsState : AutoCloseable {
     val vertexBuffer: VertexBuffer
     val indexBuffer: IndexBuffer
     val primitiveType: PrimitiveType

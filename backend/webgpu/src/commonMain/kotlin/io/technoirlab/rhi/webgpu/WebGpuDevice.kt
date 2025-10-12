@@ -4,8 +4,8 @@ import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
 import io.technoirlab.rhi.core.Format
+import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
-import io.technoirlab.rhi.core.RenderState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
 import io.technoirlab.rhi.core.Texture
@@ -44,7 +44,7 @@ class WebGpuDevice : Device {
         TODO("Not yet implemented")
     }
 
-    override fun createRenderState(
+    override fun createGraphicsState(
         renderTarget: RenderTarget,
         vertexBuffer: VertexBuffer,
         indexBuffer: IndexBuffer,
@@ -54,7 +54,7 @@ class WebGpuDevice : Device {
         rasterState: RasterState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
-    ): RenderState {
+    ): GraphicsState {
         TODO("Not yet implemented")
     }
 
