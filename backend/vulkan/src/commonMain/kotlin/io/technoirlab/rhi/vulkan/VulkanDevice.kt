@@ -53,6 +53,7 @@ import io.technoirlab.volk.VkVertexInputBindingDescription
 import io.technoirlab.vulkan.CommandPool
 import io.technoirlab.vulkan.Image
 import io.technoirlab.vulkan.PhysicalDevice
+import io.technoirlab.vulkan.PipelineCache
 import io.technoirlab.vulkan.Queue
 import io.technoirlab.vulkan.Surface
 import kotlinx.cinterop.MemScope
@@ -84,6 +85,7 @@ internal class VulkanDevice(
     val presentQueue: Queue
     val memoryManager: VulkanMemoryManager
     val commandPool: CommandPool
+    private val pipelineCache: PipelineCache
 
     init {
         val queueFamilyIndices = listOfNotNull(
@@ -107,6 +109,7 @@ internal class VulkanDevice(
                 flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
                 queueFamilyIndex = deviceSpec.graphicsQueueFamilyIndex
             }
+            pipelineCache = device.createPipelineCache()
         }
         memoryManager = VulkanMemoryManager(device, physicalDevice.device)
 
@@ -116,6 +119,7 @@ internal class VulkanDevice(
     }
 
     override fun close() {
+        pipelineCache.close()
         commandPool.close()
         device.close()
     }
@@ -228,7 +232,6 @@ internal class VulkanDevice(
             pushConstantRangeCount = if (pushConstants != null) 1u else 0u
             pPushConstantRanges = ranges?.ptr
         }
-        val pipelineCache = device.createPipelineCache()
         val colorAttachmentFormats = allocArray<VkFormatVar>(renderTarget.arraySize) {
             value = renderTarget.colorFormat.toVkFormat()
         }
