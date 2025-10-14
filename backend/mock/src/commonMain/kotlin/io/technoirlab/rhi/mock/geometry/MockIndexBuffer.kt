@@ -2,10 +2,10 @@ package io.technoirlab.rhi.mock.geometry
 
 import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.IndexType
+import io.technoirlab.rhi.mock.MockBuffer
 
 internal class MockIndexBuffer(
-    override val size: UInt,
+    size: UInt,
+    override val indexCount: UInt,
     override val indexType: IndexType
-) : IndexBuffer {
-    override fun close() = Unit
-}
+) : MockBuffer(size), IndexBuffer

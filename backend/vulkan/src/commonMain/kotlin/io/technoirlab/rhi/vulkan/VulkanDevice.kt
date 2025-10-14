@@ -144,24 +144,26 @@ internal class VulkanDevice(
         )
     }
 
-    override fun createVertexBuffer(source: Source, size: UInt, vertexLayout: VertexLayout): VertexBuffer = memScoped {
+    override fun createVertexBuffer(source: Source, vertexCount: UInt, vertexLayout: VertexLayout): VertexBuffer = memScoped {
+        val bufferSize = vertexCount * vertexLayout.vertexSize
         val buffer = device.createBuffer {
-            this.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
-            this.size = size.toULong() * vertexLayout.vertexSize
+            usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+            size = bufferSize.toULong()
         }
         val memory = memoryManager.allocateBufferMemory(buffer)
         memory.copyData(source, buffer.size, 0u)
-        VulkanVertexBuffer(buffer, memory, size, vertexLayout)
+        VulkanVertexBuffer(buffer, memory, bufferSize, vertexCount, vertexLayout)
     }
 
-    override fun createIndexBuffer(source: Source, size: UInt, indexType: IndexType): IndexBuffer = memScoped {
+    override fun createIndexBuffer(source: Source, indexCount: UInt, indexType: IndexType): IndexBuffer = memScoped {
+        val bufferSize = indexCount * indexType.sizeInBytes
         val buffer = device.createBuffer {
-            this.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
-            this.size = size.toULong() * indexType.sizeInBytes
+            usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
+            size = bufferSize.toULong()
         }
         val memory = memoryManager.allocateBufferMemory(buffer)
         memory.copyData(source, buffer.size, 0u)
-        VulkanIndexBuffer(buffer, memory, size, indexType)
+        VulkanIndexBuffer(buffer, memory, bufferSize, indexCount, indexType)
     }
 
     override fun loadShader(source: Source): Shader = memScoped {

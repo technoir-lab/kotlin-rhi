@@ -2,18 +2,14 @@ package io.technoirlab.rhi.vulkan.geometry
 
 import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.IndexType
-import io.technoirlab.vulkan.Buffer
-import io.technoirlab.vulkan.DeviceMemory
+import io.technoirlab.rhi.vulkan.VulkanBuffer
+import io.technoirlab.vulkan.Buffer as VkBuffer
+import io.technoirlab.vulkan.DeviceMemory as VkDeviceMemory
 
 internal class VulkanIndexBuffer(
-    val buffer: Buffer,
-    private val memory: DeviceMemory,
-    override val size: UInt,
+    buffer: VkBuffer,
+    memory: VkDeviceMemory,
+    size: UInt,
+    override val indexCount: UInt,
     override val indexType: IndexType
-) : IndexBuffer {
-
-    override fun close() {
-        memory.close()
-        buffer.close()
-    }
-}
+) : VulkanBuffer(buffer, memory, size), IndexBuffer

@@ -26,7 +26,7 @@ class WebGpuDevice : Device {
 
     override fun createVertexBuffer(
         source: Source,
-        size: UInt,
+        vertexCount: UInt,
         vertexLayout: VertexLayout
     ): VertexBuffer {
         TODO("Not yet implemented")
@@ -34,7 +34,7 @@ class WebGpuDevice : Device {
 
     override fun createIndexBuffer(
         source: Source,
-        size: UInt,
+        indexCount: UInt,
         indexType: IndexType
     ): IndexBuffer {
         TODO("Not yet implemented")

@@ -14,6 +14,7 @@ import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 import io.technoirlab.rhi.core.geometry.VertexLayout
+import io.technoirlab.rhi.core.geometry.sizeInBytes
 import io.technoirlab.rhi.mock.geometry.MockIndexBuffer
 import io.technoirlab.rhi.mock.geometry.MockVertexBuffer
 import kotlinx.io.Source
@@ -26,15 +27,15 @@ class MockDevice : Device {
 
     override fun createVertexBuffer(
         source: Source,
-        size: UInt,
+        vertexCount: UInt,
         vertexLayout: VertexLayout
-    ): VertexBuffer = MockVertexBuffer(size, vertexLayout)
+    ): VertexBuffer = MockVertexBuffer(vertexCount * vertexLayout.vertexSize, vertexCount, vertexLayout)
 
     override fun createIndexBuffer(
         source: Source,
-        size: UInt,
+        indexCount: UInt,
         indexType: IndexType
-    ): IndexBuffer = MockIndexBuffer(size, indexType)
+    ): IndexBuffer = MockIndexBuffer(indexCount * indexType.sizeInBytes, indexCount, indexType)
 
     override fun loadShader(source: Source): Shader = MockShader()
 

@@ -10,9 +10,9 @@ import kotlinx.io.Source
 interface Device : AutoCloseable {
     fun createDepthStencilBuffer(extent: Extent2D, format: Format): Texture
 
-    fun createVertexBuffer(source: Source, size: UInt, vertexLayout: VertexLayout): VertexBuffer
+    fun createVertexBuffer(source: Source, vertexCount: UInt, vertexLayout: VertexLayout): VertexBuffer
 
-    fun createIndexBuffer(source: Source, size: UInt, indexType: IndexType): IndexBuffer
+    fun createIndexBuffer(source: Source, indexCount: UInt, indexType: IndexType): IndexBuffer
 
     fun loadShader(source: Source): Shader
 

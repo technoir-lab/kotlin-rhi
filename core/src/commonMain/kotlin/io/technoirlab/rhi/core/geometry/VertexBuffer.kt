@@ -1,6 +1,8 @@
 package io.technoirlab.rhi.core.geometry
 
-interface VertexBuffer : AutoCloseable {
-    val size: UInt
+import io.technoirlab.rhi.core.Buffer
+
+interface VertexBuffer : Buffer {
+    val vertexCount: UInt
     val vertexLayout: VertexLayout
 }

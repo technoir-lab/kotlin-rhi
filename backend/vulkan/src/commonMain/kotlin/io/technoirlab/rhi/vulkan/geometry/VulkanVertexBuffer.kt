@@ -2,18 +2,14 @@ package io.technoirlab.rhi.vulkan.geometry
 
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 import io.technoirlab.rhi.core.geometry.VertexLayout
-import io.technoirlab.vulkan.Buffer
-import io.technoirlab.vulkan.DeviceMemory
+import io.technoirlab.rhi.vulkan.VulkanBuffer
+import io.technoirlab.vulkan.Buffer as VkBuffer
+import io.technoirlab.vulkan.DeviceMemory as VkDeviceMemory
 
 internal class VulkanVertexBuffer(
-    val buffer: Buffer,
-    private val memory: DeviceMemory,
-    override val size: UInt,
-    override val vertexLayout: VertexLayout
-) : VertexBuffer {
-
-    override fun close() {
-        memory.close()
-        buffer.close()
-    }
-}
+    buffer: VkBuffer,
+    memory: VkDeviceMemory,
+    size: UInt,
+    override val vertexCount: UInt,
+    override val vertexLayout: VertexLayout,
+) : VulkanBuffer(buffer, memory, size), VertexBuffer
