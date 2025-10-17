@@ -20,6 +20,7 @@ import io.technoirlab.volk.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+import io.technoirlab.volk.VK_PIPELINE_BIND_POINT_GRAPHICS
 import io.technoirlab.volk.VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT
 import io.technoirlab.volk.VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT
 import io.technoirlab.volk.VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT
@@ -174,7 +175,7 @@ class VulkanRenderer : Renderer {
 
         val commandBuffer = frameState.commandBuffer
 
-        commandBuffer.bindPipeline(graphicsState.pipeline)
+        commandBuffer.bindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsState.pipeline)
         commandBuffer.setPrimitiveTopology(graphicsState.primitiveType.toVkPrimitiveTopology())
         commandBuffer.setViewportWithCount(count = 1u) {
             x = 0.0f
