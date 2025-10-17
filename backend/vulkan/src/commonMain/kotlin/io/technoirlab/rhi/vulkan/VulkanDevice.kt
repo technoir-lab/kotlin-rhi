@@ -105,10 +105,10 @@ internal class VulkanDevice(
                 graphicsQueue = device.getQueue(deviceSpec.graphicsQueueFamilyIndex)
                 presentQueue = graphicsQueue
             }
-            commandPool = device.createCommandPool {
+            commandPool = device.createCommandPool(
+                queueFamilyIndex = deviceSpec.graphicsQueueFamilyIndex,
                 flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
-                queueFamilyIndex = deviceSpec.graphicsQueueFamilyIndex
-            }
+            )
             pipelineCache = device.createPipelineCache()
         }
         memoryManager = VulkanMemoryManager(device, physicalDevice.device)
