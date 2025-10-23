@@ -1,17 +1,28 @@
 package io.technoirlab.rhi.vulkan
 
+import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.technoirlab.rhi.core.WindowHandle
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
+import io.technoirlab.volk.VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
 import io.technoirlab.volk.VK_EXT_DEBUG_UTILS_EXTENSION_NAME
-import io.technoirlab.volk.VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
-import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_MAKE_VERSION
+import io.technoirlab.volk.VkDebugUtilsMessageSeverityFlagBitsEXT
+import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagBitsEXT
+import io.technoirlab.volk.VkDebugUtilsMessengerCallbackDataEXT
+import io.technoirlab.vulkan.ApplicationInfo
+import io.technoirlab.vulkan.DebugMessenger
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.Surface
 import io.technoirlab.vulkan.Vulkan
 import kotlinx.cinterop.MemScope
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.toCStringArray
+import kotlinx.cinterop.toKString
 
 internal class VulkanInstance(
     private val vulkan: Vulkan,
@@ -21,8 +32,8 @@ internal class VulkanInstance(
 ) : AutoCloseable {
 
     private val logger = KotlinLogging.logger("VulkanRenderer")
-    private val instance = memScoped { vulkan.createInstance(enabledLayers, enabledExtensions) }
-    private val debugReporter: VulkanDebugReporter?
+    private val instance: Instance
+    private val debugMessenger: DebugMessenger?
 
     init {
         logger.info { "Created Vulkan instance. API version ${versionToString(apiVersion)}" }
@@ -34,15 +45,35 @@ internal class VulkanInstance(
             logger.info { "Enabled instance extensions: [${enabledExtensions.joinToString()}]" }
         }
 
-        debugReporter = if (enabledExtensions.any { it.name == VK_EXT_DEBUG_UTILS_EXTENSION_NAME }) {
-            VulkanDebugReporter(instance, logger)
-        } else {
-            null
+        memScoped {
+            instance = vulkan.createInstance(
+                enabledLayers = enabledLayers.map { it.name },
+                enabledExtensions = enabledExtensions.map { it.name },
+                applicationInfo = ApplicationInfo(
+                    apiVersion = apiVersion,
+                    applicationVersion = VK_MAKE_VERSION(1u, 0u, 0u),
+                    engineVersion = VK_MAKE_VERSION(1u, 0u, 0u)
+                )
+            )
+
+            debugMessenger = if (VulkanExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME) in enabledExtensions) {
+                instance.createDebugMessenger(
+                    messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT or
+                        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT or
+                        VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT,
+                    messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT or
+                        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT or
+                        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+                    callback = DebugMessengerLogger(logger)
+                )
+            } else {
+                null
+            }
         }
     }
 
     override fun close() {
-        debugReporter?.close()
+        debugMessenger?.close()
         instance.close()
     }
 
@@ -54,27 +85,19 @@ internal class VulkanInstance(
     fun getPhysicalDevices(): List<VulkanPhysicalDevice> =
         instance.enumeratePhysicalDevices().map { VulkanPhysicalDevice(it) }.toList()
 
-    context(memScope: MemScope)
-    private fun Vulkan.createInstance(enabledLayers: Collection<VulkanLayer>, enabledExtensions: Collection<VulkanExtension>): Instance {
-        val layerNames = enabledLayers.map { it.name }.toCStringArray(memScope)
-        val extensionNames = enabledExtensions.map { it.name }.toCStringArray(memScope)
-        return createInstance(
-            applicationInfo = {
-                applicationVersion = VK_MAKE_VERSION(1u, 0u, 0u)
-                engineVersion = VK_MAKE_VERSION(1u, 0u, 0u)
-                apiVersion = this@VulkanInstance.apiVersion
-            },
-            instanceInfo = {
-                flags = if (VulkanExtension(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) in enabledExtensions) {
-                    VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
-                } else {
-                    0u
-                }
-                enabledLayerCount = enabledLayers.size.toUInt()
-                ppEnabledLayerNames = layerNames
-                enabledExtensionCount = enabledExtensions.size.toUInt()
-                ppEnabledExtensionNames = extensionNames
+    private class DebugMessengerLogger(private val logger: KLogger) : DebugMessenger.Callback {
+        override fun onEvent(
+            messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
+            messageTypes: VkDebugUtilsMessageTypeFlagBitsEXT,
+            callbackData: VkDebugUtilsMessengerCallbackDataEXT
+        ) {
+            val message = callbackData.pMessage?.toKString() ?: return
+            when (messageSeverity) {
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT -> logger.error { message }
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT -> logger.warn { message }
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT -> logger.info { message }
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT -> logger.debug { message }
             }
-        )
+        }
     }
 }
