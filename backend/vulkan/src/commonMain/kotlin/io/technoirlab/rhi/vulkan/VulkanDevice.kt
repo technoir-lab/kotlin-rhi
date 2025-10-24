@@ -304,7 +304,6 @@ internal class VulkanDevice(
             fragmentShader = fragmentShader,
             pipeline = pipeline,
             pipelineLayout = pipelineLayout,
-            pipelineCache = pipelineCache,
             rasterState = rasterState,
             depthStencilState = depthStencilState,
             pushConstants = pushConstants

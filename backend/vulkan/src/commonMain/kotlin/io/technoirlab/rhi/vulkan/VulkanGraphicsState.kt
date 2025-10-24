@@ -8,14 +8,12 @@ import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.PrimitiveType
 import io.technoirlab.rhi.core.geometry.VertexBuffer
 import io.technoirlab.vulkan.Pipeline
-import io.technoirlab.vulkan.PipelineCache
 import io.technoirlab.vulkan.PipelineLayout
 
 @Suppress("LongParameterList")
 internal class VulkanGraphicsState(
     val pipeline: Pipeline,
     val pipelineLayout: PipelineLayout,
-    val pipelineCache: PipelineCache,
     override val vertexBuffer: VertexBuffer,
     override val indexBuffer: IndexBuffer,
     override val primitiveType: PrimitiveType,
@@ -28,7 +26,6 @@ internal class VulkanGraphicsState(
 
     override fun close() {
         pipeline.close()
-        pipelineCache.close()
         pipelineLayout.close()
     }
 }
