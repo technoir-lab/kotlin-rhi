@@ -1,6 +1,8 @@
 package io.technoirlab.rhi.vulkan
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.technoirlab.rhi.core.BlendState
+import io.technoirlab.rhi.core.ColorTargetBlendState
 import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
@@ -193,6 +195,7 @@ internal class VulkanDevice(
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState,
+        blendState: BlendState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
     ): GraphicsState = memScoped {
@@ -237,8 +240,8 @@ internal class VulkanDevice(
         val colorAttachmentFormats = allocArray<VkFormatVar>(renderTarget.arraySize) {
             value = renderTarget.colorFormat.toVkFormat()
         }
-        val blendState = allocArray<VkPipelineColorBlendAttachmentState>(renderTarget.arraySize) {
-            colorWriteMask = 0xfU
+        val blendAttachmentState = allocArray<VkPipelineColorBlendAttachmentState>(renderTarget.arraySize) {
+            setFrom(blendState.colorTargets[it])
         }
         val pipeline = device.createGraphicsPipeline(
             layout = pipelineLayout,
@@ -292,7 +295,7 @@ internal class VulkanDevice(
             },
             colorBlendState = {
                 attachmentCount = renderTarget.arraySize.toUInt()
-                pAttachments = blendState
+                pAttachments = blendAttachmentState
             },
             cache = pipelineCache
         )
@@ -305,6 +308,7 @@ internal class VulkanDevice(
             pipeline = pipeline,
             pipelineLayout = pipelineLayout,
             rasterState = rasterState,
+            blendState = blendState,
             depthStencilState = depthStencilState,
             pushConstants = pushConstants
         )
@@ -358,5 +362,18 @@ internal class VulkanDevice(
         compareMask = depthStencilState.stencilReadMask.toUInt()
         writeMask = depthStencilState.stencilWriteMask.toUInt()
         reference = depthStencilState.stencilRefValue.toUInt()
+    }
+
+    private fun VkPipelineColorBlendAttachmentState.setFrom(blendState: ColorTargetBlendState) {
+        blendEnable = if (blendState.blendEnable) VK_TRUE else VK_FALSE
+        colorWriteMask = blendState.colorWriteMask
+
+        colorBlendOp = blendState.color.blendOp.toVkBlendOp()
+        srcColorBlendFactor = blendState.color.srcFactor.toVkBlendFactor()
+        dstColorBlendFactor = blendState.color.dstFactor.toVkBlendFactor()
+
+        alphaBlendOp = blendState.alpha.blendOp.toVkBlendOp()
+        srcAlphaBlendFactor = blendState.alpha.srcFactor.toVkBlendFactor()
+        dstAlphaBlendFactor = blendState.alpha.dstFactor.toVkBlendFactor()
     }
 }

@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.webgpu
 
+import io.technoirlab.rhi.core.BlendState
 import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
@@ -52,6 +53,7 @@ class WebGpuDevice : Device {
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState,
+        blendState: BlendState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
     ): GraphicsState {

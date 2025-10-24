@@ -25,6 +25,7 @@ interface Device : AutoCloseable {
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState = RasterState(),
+        blendState: BlendState = BlendState(),
         depthStencilState: DepthStencilState = DepthStencilState(),
         pushConstants: ByteArray? = null
     ): GraphicsState

@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.mock
 
+import io.technoirlab.rhi.core.BlendState
 import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
@@ -16,6 +17,7 @@ internal class MockGraphicsState(
     override val vertexShader: Shader,
     override val fragmentShader: Shader,
     override val rasterState: RasterState,
+    override val blendState: BlendState,
     override val depthStencilState: DepthStencilState,
     override var pushConstants: ByteArray?
 ) : GraphicsState {

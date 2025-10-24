@@ -1,5 +1,6 @@
 package io.technoirlab.rhi.mock
 
+import io.technoirlab.rhi.core.BlendState
 import io.technoirlab.rhi.core.DepthStencilState
 import io.technoirlab.rhi.core.Device
 import io.technoirlab.rhi.core.Extent2D
@@ -47,6 +48,7 @@ class MockDevice : Device {
         vertexShader: Shader,
         fragmentShader: Shader,
         rasterState: RasterState,
+        blendState: BlendState,
         depthStencilState: DepthStencilState,
         pushConstants: ByteArray?
     ): GraphicsState = MockGraphicsState(
@@ -56,6 +58,7 @@ class MockDevice : Device {
         vertexShader = vertexShader,
         fragmentShader = fragmentShader,
         rasterState = rasterState,
+        blendState = blendState,
         depthStencilState = depthStencilState,
         pushConstants = pushConstants
     )

@@ -11,6 +11,7 @@ interface GraphicsState : AutoCloseable {
     val vertexShader: Shader
     val fragmentShader: Shader
     val rasterState: RasterState
+    val blendState: BlendState
     val depthStencilState: DepthStencilState
     var pushConstants: ByteArray?
 }
