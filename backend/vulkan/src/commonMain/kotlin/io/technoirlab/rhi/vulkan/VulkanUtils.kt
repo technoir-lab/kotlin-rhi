@@ -29,7 +29,6 @@ import io.technoirlab.volk.VK_FRONT_FACE_CLOCKWISE
 import io.technoirlab.volk.VK_FRONT_FACE_COUNTER_CLOCKWISE
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT16
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT32
-import io.technoirlab.volk.VK_INDEX_TYPE_UINT8
 import io.technoirlab.volk.VK_POLYGON_MODE_FILL
 import io.technoirlab.volk.VK_POLYGON_MODE_LINE
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_LINE_LIST
@@ -108,7 +107,6 @@ internal fun FrontFace.toVkFrontFace(): VkFrontFace = when (this) {
 
 internal fun IndexType.toVkIndexType(): VkIndexType =
     when (this) {
-        IndexType.Int8 -> VK_INDEX_TYPE_UINT8
         IndexType.Int16 -> VK_INDEX_TYPE_UINT16
         IndexType.Int32 -> VK_INDEX_TYPE_UINT32
     }
