@@ -9,6 +9,7 @@ import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
+import io.technoirlab.rhi.core.ShaderType
 import io.technoirlab.rhi.core.Texture
 import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.IndexType
@@ -38,7 +39,8 @@ class MockDevice : Device {
         indexType: IndexType
     ): IndexBuffer = MockIndexBuffer(indexCount * indexType.sizeInBytes, indexCount, indexType)
 
-    override fun loadShader(source: Source): Shader = MockShader()
+    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader =
+        MockShader(type, entryPoint)
 
     override fun createGraphicsState(
         renderTarget: RenderTarget,

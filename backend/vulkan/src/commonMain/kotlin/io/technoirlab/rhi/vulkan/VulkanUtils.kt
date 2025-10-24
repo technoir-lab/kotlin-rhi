@@ -8,6 +8,7 @@ import io.technoirlab.rhi.core.ComparisonFunc
 import io.technoirlab.rhi.core.CullMode
 import io.technoirlab.rhi.core.FillMode
 import io.technoirlab.rhi.core.FrontFace
+import io.technoirlab.rhi.core.ShaderType
 import io.technoirlab.rhi.core.StencilOp
 import io.technoirlab.rhi.core.geometry.IndexType
 import io.technoirlab.rhi.core.geometry.PrimitiveType
@@ -60,6 +61,12 @@ import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_LINE_STRIP
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_POINT_LIST
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+import io.technoirlab.volk.VK_SHADER_STAGE_COMPUTE_BIT
+import io.technoirlab.volk.VK_SHADER_STAGE_FRAGMENT_BIT
+import io.technoirlab.volk.VK_SHADER_STAGE_GEOMETRY_BIT
+import io.technoirlab.volk.VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+import io.technoirlab.volk.VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT
+import io.technoirlab.volk.VK_SHADER_STAGE_VERTEX_BIT
 import io.technoirlab.volk.VK_STENCIL_OP_DECREMENT_AND_CLAMP
 import io.technoirlab.volk.VK_STENCIL_OP_DECREMENT_AND_WRAP
 import io.technoirlab.volk.VK_STENCIL_OP_INCREMENT_AND_CLAMP
@@ -83,6 +90,7 @@ import io.technoirlab.volk.VkIndexType
 import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPresentModeKHR
 import io.technoirlab.volk.VkPrimitiveTopology
+import io.technoirlab.volk.VkShaderStageFlagBits
 import io.technoirlab.volk.VkStencilOp
 import io.technoirlab.volk.VkSurfaceTransformFlagBitsKHR
 import io.technoirlab.volk.string_VkColorSpaceKHR
@@ -171,6 +179,15 @@ internal fun PrimitiveType.toVkPrimitiveTopology(): VkPrimitiveTopology = when (
     PrimitiveType.LineStrip -> VK_PRIMITIVE_TOPOLOGY_LINE_STRIP
     PrimitiveType.TriangleList -> VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
     PrimitiveType.TriangleStrip -> VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+}
+
+internal fun ShaderType.toVkShaderStageFlagBits(): VkShaderStageFlagBits = when (this) {
+    ShaderType.Compute -> VK_SHADER_STAGE_COMPUTE_BIT
+    ShaderType.Vertex -> VK_SHADER_STAGE_VERTEX_BIT
+    ShaderType.Hull -> VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+    ShaderType.Domain -> VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT
+    ShaderType.Geometry -> VK_SHADER_STAGE_GEOMETRY_BIT
+    ShaderType.Fragment -> VK_SHADER_STAGE_FRAGMENT_BIT
 }
 
 internal fun StencilOp.toVkStencilOp(): VkStencilOp = when (this) {

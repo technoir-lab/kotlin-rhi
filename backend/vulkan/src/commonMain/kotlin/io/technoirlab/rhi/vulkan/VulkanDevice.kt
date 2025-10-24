@@ -11,6 +11,7 @@ import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
+import io.technoirlab.rhi.core.ShaderType
 import io.technoirlab.rhi.core.StencilOpState
 import io.technoirlab.rhi.core.WindowHandle
 import io.technoirlab.rhi.core.config.RendererConfig
@@ -37,7 +38,6 @@ import io.technoirlab.volk.VK_IMAGE_TILING_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_TYPE_2D
 import io.technoirlab.volk.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
-import io.technoirlab.volk.VK_SHADER_STAGE_FRAGMENT_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_VERTEX_BIT
 import io.technoirlab.volk.VK_SHARING_MODE_EXCLUSIVE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
@@ -168,7 +168,7 @@ internal class VulkanDevice(
         VulkanIndexBuffer(buffer, memory, bufferSize, indexCount, indexType)
     }
 
-    override fun loadShader(source: Source): Shader = memScoped {
+    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader = memScoped {
         val code = source.readByteArray()
         val shader = code.usePinned { pinned ->
             device.createShaderModule {
@@ -176,7 +176,7 @@ internal class VulkanDevice(
                 codeSize = code.size.toULong()
             }
         }
-        return VulkanShader(shader)
+        return VulkanShader(type, entryPoint, shader)
     }
 
     context(memScope: MemScope)
@@ -247,9 +247,10 @@ internal class VulkanDevice(
             layout = pipelineLayout,
             stageCount = 2u,
             stages = { index ->
-                stage = if (index == 0u) VK_SHADER_STAGE_VERTEX_BIT else VK_SHADER_STAGE_FRAGMENT_BIT
-                module = if (index == 0u) vertexShader.shader.handle else fragmentShader.shader.handle
-                pName = "main".cstr.ptr
+                val shader = if (index == 0u) vertexShader else fragmentShader
+                stage = shader.type.toVkShaderStageFlagBits()
+                module = shader.shader.handle
+                pName = shader.entryPoint.cstr.ptr
             },
             vertexInputState = {
                 vertexBindingDescriptionCount = 1u

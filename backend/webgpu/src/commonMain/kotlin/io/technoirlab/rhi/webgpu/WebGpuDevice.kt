@@ -9,6 +9,7 @@ import io.technoirlab.rhi.core.GraphicsState
 import io.technoirlab.rhi.core.RasterState
 import io.technoirlab.rhi.core.RenderTarget
 import io.technoirlab.rhi.core.Shader
+import io.technoirlab.rhi.core.ShaderType
 import io.technoirlab.rhi.core.Texture
 import io.technoirlab.rhi.core.geometry.IndexBuffer
 import io.technoirlab.rhi.core.geometry.IndexType
@@ -41,7 +42,7 @@ class WebGpuDevice : Device {
         TODO("Not yet implemented")
     }
 
-    override fun loadShader(source: Source): Shader {
+    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader {
         TODO("Not yet implemented")
     }
 
