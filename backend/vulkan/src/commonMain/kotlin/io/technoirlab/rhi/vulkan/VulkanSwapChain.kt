@@ -70,8 +70,8 @@ internal class VulkanSwapChain(
 
             frameInFlightState = List(NUM_FRAMES_IN_FLIGHT) {
                 VulkanFrameInFlightState(
-                    commandPool = device.commandPool,
-                    commandBuffer = device.commandPool.allocateCommandBuffers(1).single(),
+                    commandPool = device.graphicsCommandPool,
+                    commandBuffer = device.graphicsCommandPool.allocateCommandBuffers(1).single(),
                     acquireSemaphore = device.device.createSemaphore(),
                     submitFence = device.device.createFence { flags = VK_FENCE_CREATE_SIGNALED_BIT }
                 )

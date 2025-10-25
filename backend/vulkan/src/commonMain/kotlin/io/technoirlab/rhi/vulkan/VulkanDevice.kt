@@ -84,9 +84,12 @@ internal class VulkanDevice(
 
     val device: VkDevice
     val graphicsQueue: Queue
+    val graphicsCommandPool: CommandPool
     val presentQueue: Queue
+    val computeQueue: Queue?
+    val computeCommandPool: CommandPool?
     val memoryManager: VulkanMemoryManager
-    val commandPool: CommandPool
+
     private val pipelineCache: PipelineCache
 
     init {
@@ -107,10 +110,22 @@ internal class VulkanDevice(
                 graphicsQueue = device.getQueue(deviceSpec.graphicsQueueFamilyIndex)
                 presentQueue = graphicsQueue
             }
-            commandPool = device.createCommandPool(
+            graphicsCommandPool = device.createCommandPool(
                 queueFamilyIndex = deviceSpec.graphicsQueueFamilyIndex,
                 flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
             )
+            if (deviceSpec.computeQueueFamilyIndex != null) {
+                logger.info { "Creating compute queue" }
+                computeQueue = device.getQueue(deviceSpec.computeQueueFamilyIndex)
+                computeCommandPool = device.createCommandPool(
+                    queueFamilyIndex = deviceSpec.computeQueueFamilyIndex,
+                    flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+                )
+            } else {
+                computeQueue = null
+                computeCommandPool = null
+            }
+
             pipelineCache = device.createPipelineCache()
         }
         memoryManager = VulkanMemoryManager(device, physicalDevice.device)
@@ -122,7 +137,10 @@ internal class VulkanDevice(
 
     override fun close() {
         pipelineCache.close()
-        commandPool.close()
+        computeCommandPool?.close()
+        computeQueue?.close()
+        graphicsCommandPool.close()
+        graphicsQueue.close()
         device.close()
     }
 
