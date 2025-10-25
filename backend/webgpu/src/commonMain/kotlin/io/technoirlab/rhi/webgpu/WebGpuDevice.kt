@@ -42,7 +42,7 @@ class WebGpuDevice : Device {
         TODO("Not yet implemented")
     }
 
-    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader {
+    override fun createShader(type: ShaderType, source: Source, entryPoint: String): Shader {
         TODO("Not yet implemented")
     }
 

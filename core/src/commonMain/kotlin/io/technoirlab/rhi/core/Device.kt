@@ -14,7 +14,7 @@ interface Device : AutoCloseable {
 
     fun createIndexBuffer(source: Source, indexCount: UInt, indexType: IndexType): IndexBuffer
 
-    fun createShader(type: ShaderType, entryPoint: String = "main", source: Source): Shader
+    fun createShader(type: ShaderType, source: Source, entryPoint: String = "main"): Shader
 
     @Suppress("LongParameterList")
     fun createGraphicsState(

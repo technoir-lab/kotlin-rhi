@@ -39,7 +39,7 @@ class MockDevice : Device {
         indexType: IndexType
     ): IndexBuffer = MockIndexBuffer(indexCount * indexType.sizeInBytes, indexCount, indexType)
 
-    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader =
+    override fun createShader(type: ShaderType, source: Source, entryPoint: String): Shader =
         MockShader(type, entryPoint)
 
     override fun createGraphicsState(

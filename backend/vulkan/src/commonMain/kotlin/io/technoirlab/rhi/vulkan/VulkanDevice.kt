@@ -186,7 +186,7 @@ internal class VulkanDevice(
         VulkanIndexBuffer(buffer, memory, bufferSize, indexCount, indexType)
     }
 
-    override fun createShader(type: ShaderType, entryPoint: String, source: Source): Shader = memScoped {
+    override fun createShader(type: ShaderType, source: Source, entryPoint: String): Shader = memScoped {
         val code = source.readByteArray()
         val shader = code.usePinned { pinned ->
             device.createShaderModule {
