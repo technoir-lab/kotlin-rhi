@@ -31,13 +31,13 @@ class MockDevice : Device {
         source: Source,
         vertexCount: UInt,
         vertexLayout: VertexLayout
-    ): VertexBuffer = MockVertexBuffer(vertexCount * vertexLayout.vertexSize, vertexCount, vertexLayout)
+    ): VertexBuffer = MockVertexBuffer(vertexCount.toULong() * vertexLayout.vertexSize, vertexCount, vertexLayout)
 
     override fun createIndexBuffer(
         source: Source,
         indexCount: UInt,
         indexType: IndexType
-    ): IndexBuffer = MockIndexBuffer(indexCount * indexType.sizeInBytes, indexCount, indexType)
+    ): IndexBuffer = MockIndexBuffer(indexCount.toULong() * indexType.sizeInBytes, indexCount, indexType)
 
     override fun createShader(type: ShaderType, source: Source, entryPoint: String): Shader =
         MockShader(type, entryPoint)

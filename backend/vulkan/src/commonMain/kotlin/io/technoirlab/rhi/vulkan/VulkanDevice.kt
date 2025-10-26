@@ -165,24 +165,24 @@ internal class VulkanDevice(
     }
 
     override fun createVertexBuffer(source: Source, vertexCount: UInt, vertexLayout: VertexLayout): VertexBuffer = memScoped {
-        val bufferSize = vertexCount * vertexLayout.vertexSize
+        val bufferSize = vertexCount.toULong() * vertexLayout.vertexSize
         val buffer = device.createBuffer {
             usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
-            size = bufferSize.toULong()
+            size = bufferSize
         }
         val memory = memoryManager.allocateBufferMemory(buffer)
-        memory.copyData(source, buffer.size, 0u)
+        memory.copyData(source, buffer.size)
         VulkanVertexBuffer(buffer, memory, bufferSize, vertexCount, vertexLayout)
     }
 
     override fun createIndexBuffer(source: Source, indexCount: UInt, indexType: IndexType): IndexBuffer = memScoped {
-        val bufferSize = indexCount * indexType.sizeInBytes
+        val bufferSize = indexCount.toULong() * indexType.sizeInBytes
         val buffer = device.createBuffer {
             usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
-            size = bufferSize.toULong()
+            size = bufferSize
         }
         val memory = memoryManager.allocateBufferMemory(buffer)
-        memory.copyData(source, buffer.size, 0u)
+        memory.copyData(source, buffer.size)
         VulkanIndexBuffer(buffer, memory, bufferSize, indexCount, indexType)
     }
 

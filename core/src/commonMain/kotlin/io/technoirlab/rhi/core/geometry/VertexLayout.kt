@@ -6,6 +6,6 @@ data class VertexLayout(
 ) {
     companion object {
         fun packed(vararg attributes: VertexAttribute): VertexLayout =
-            VertexLayout(attributes.toList(), attributes.sumOf { it.type.sizeInBytes.toInt() }.toUInt())
+            VertexLayout(attributes.toList(), vertexSize = attributes.sumOf { it.type.sizeInBytes })
     }
 }

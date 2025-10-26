@@ -199,8 +199,8 @@ class VulkanRenderer : Renderer {
         }
 
         commandBuffer.bindVertexBuffer(graphicsState.vertexBuffer.buffer)
-        commandBuffer.bindIndexBuffer(graphicsState.indexBuffer.buffer, graphicsState.indexBuffer.indexType.toVkIndexType(), size = 0u)
-        commandBuffer.drawIndexed(graphicsState.indexBuffer.size)
+        commandBuffer.bindIndexBuffer(graphicsState.indexBuffer.buffer, graphicsState.indexBuffer.indexType.toVkIndexType())
+        commandBuffer.drawIndexed(graphicsState.indexBuffer.indexCount)
     }
 
     override fun reset(): Unit = memScoped {

@@ -9,7 +9,7 @@ import io.technoirlab.vulkan.DeviceMemory as VkDeviceMemory
 internal class VulkanVertexBuffer(
     buffer: VkBuffer,
     memory: VkDeviceMemory,
-    size: UInt,
+    size: ULong,
     override val vertexCount: UInt,
     override val vertexLayout: VertexLayout,
 ) : VulkanBuffer(buffer, memory, size), VertexBuffer

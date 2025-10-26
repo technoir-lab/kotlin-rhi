@@ -9,7 +9,7 @@ import io.technoirlab.vulkan.DeviceMemory as VkDeviceMemory
 internal class VulkanIndexBuffer(
     buffer: VkBuffer,
     memory: VkDeviceMemory,
-    size: UInt,
+    size: ULong,
     override val indexCount: UInt,
     override val indexType: IndexType
 ) : VulkanBuffer(buffer, memory, size), IndexBuffer
