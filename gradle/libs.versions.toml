@@ -1,4 +1,5 @@
 [versions]
+glfw-native = "0.0.1"
 kotlin-logging = "7.0.13"
 kotlin-math = "1.7.0"
 kotlinx-browser = "0.5.0"
@@ -6,6 +7,7 @@ kotlinx-io = "0.8.0"
 vulkan-kotlin = "1.4.328-3"
 
 [libraries]
+glfw-native = { module = "io.ygdrasil:glfw-native", version.ref = "glfw-native" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-math = { module = "io.technoirlab:kotlin-math", version.ref = "kotlin-math" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
