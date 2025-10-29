@@ -28,10 +28,10 @@ dependencyResolutionManagement {
 }
 
 globalSettings {
-    projectId = "kotlin-rhi"
+    projectId = "krhi"
 
     metadata {
-        description = "Kotlin Multiplatform Render Hardware Interface."
+        description = "Render Hardware Interface for Kotlin Multiplatform."
         developer(name = "technoir", email = "technoir.dev@gmail.com")
         license(name = "The Apache Software License, Version 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.txt")
     }

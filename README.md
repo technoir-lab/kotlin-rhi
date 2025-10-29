@@ -1,6 +1,6 @@
-Kotlin RHI
-==========
+krhi
+====
 
-[![Build](https://github.com/technoir-lab/kotlin-rhi/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/technoir-lab/kotlin-rhi/actions/workflows/build.yaml) ![Maven Central Version](https://img.shields.io/maven-central/v/io.technoirlab.kotlin-rhi/core)
+[![Build](https://github.com/technoir-lab/krhi/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/technoir-lab/krhi/actions/workflows/build.yaml) ![Maven Central Version](https://img.shields.io/maven-central/v/io.technoirlab.krhi/core)
 
-Kotlin Multiplatform Render Hardware Interface.
+Render Hardware Interface for Kotlin Multiplatform.
